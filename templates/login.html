@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Reza Mahendra - Zhaenx" />
+    <meta name="description" content="kasir Apps Python Flask" />
+    <meta name="og::description" content="kasir Apps Python Flask" />
+    <meta name="referrer" content="origin" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" itemprop="image" content="" />
+    <meta property="og:site_name" content="Zhaenx" />
+    <link rel="icon" type="image/x-icon" href="/static/img/icons/favicon.ico" />
+    <link rel="icon" href="/static/img/icons/logo.png" sizes="" type="image/png" />
+    <link rel="apple-touch-icon" href="/static/img/icons/logo.png" sizes="any" type="image/png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/img/icons/logo.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/img/icons/logo.png" />
+    <title>Kasir Web Apps - Kelompok III</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+  </head>
+  <body>
+    <div class="parentMobileAlert d-none" id="parentMobileAlert">
+      <div id="mobileAlert" class="d-none">
+        <div class="alertBox">
+          <h5 class="mb-2">Noted.</h5>
+          <h5 class="m-0">ini hanya untuk desktop! Terima Kasih.</h5>
+        </div>
+      </div>
+    </div>
+    <section class="zx__Login" id="zx__Login">
+      {% if error %}
+      <div class="alertlogin d-flex justify-content-center align-items-center d-none" id="alertlogin" role="alert">
+        <div id="alertBox" class="alertBox">
+          <div class="textalert text-center">
+            <h5><i class="bi bi-exclamation-square-fill fs-4"></i> Invalid Credentials</h5>
+            <h5>{{ error }}</h5>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      <div class="container">
+        <div class="row d-flex align-items-center justify-content-center">
+          <div class="zx__container" id="zx__container">
+            <div class="zx__animasiFirst" id="zx__animasiFirst"></div>
+            <div class="zx__animasiSecond" id="zx__animasiSecond"></div>
+            <div class="zx__ParentLogin">
+              <div class="zx__LoginLeft">
+                <h2 class="zx__animation" style="--animasi_INS: 0; --animasi_EXS: 20">MASUK</h2>
+                <div class="zx__BoxFormLogin">
+                  <form method="POST" action="/login" id="loginForm">
+                    <div class="zx__animation position-relative BoxInput" style="--animasi_INS: 1; --animasi_EXS: 21">
+                      <input type="email" class="form-control zx__input" autocomplete="email" name="email" id="email" aria-describedby="emailHelp" required />
+                      <label for="email" class="form-label zx__label">Masukkan Email</label>
+                    </div>
+                    <div class="zx__animation position-relative BoxInput" style="--animasi_INS: 2; --animasi_EXS: 23">
+                      <input type="password" class="form-control zx__input" autocomplete="password" name="password" id="password" required />
+                      <label for="password" class="form-label zx__label">Masukkan Password</label>
+                    </div>
+                    <div class="zx__animation ForgotPW d-flex justify-content-between position-relative py-2" style="--animasi_INS: 3; --animasi_EXS: 24">
+                      <a href="#" class="Link-ForgotPW">Lupa Password!</a>
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input me-1" id="SavePasswordCheck" /><label class="form-check-label" for="SavePasswordCheck">Save Password</label>
+                      </div>
+                    </div>
+                    <div class="zx__animation zx__SubmitLogin justify-content-center d-flex my-4" style="--animasi_INS: 4; --animasi_EXS: 25">
+                      <button class="btn zx__ButtonFirst" id="zx__SubmitLogin" type="submit">LOGIN</button>
+                    </div>
+                    <h6 class="zx__animation text-center my-2" style="--animasi_INS: 5; --animasi_EXS: 26">
+                      Sudah punya akun Belom. . .? Kalo belom punya buat akun dulu<a class="LinkToRegis ms-1 btn" id="LinkToRegis">Disini!</a>
+                    </h6>
+                  </form>
+                </div>
+              </div>
+              <div class="zx__LoginRight">
+                <h2 class="zx__animation" style="--animasi_INS: 0; --animasi_EXS: 20">
+                  WELCOME BACK. . . !
+                  <p>#ENJOY WITH ME..! #ZHAENX404</p>
+                </h2>
+                <div class="zx__RandomQuotes zx__animation" style="--animasi_INS: 1; --animasi_EXS: 21">
+                  <p id="quoteText" class="quoteText"></p>
+                </div>
+                <div class="zx_LoginWith">
+                  <button class="btn zx__animation mb-3 zx__LoginWith" id="zx__LoginWithGoogle" style="--animasi_INS: 2; --animasi_EXS: 22">
+                    <img
+                      src="data:image/png;base64,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"
+                      alt="icons"
+                      width="25"
+                    />
+                    Continue with Google</button
+                  ><button class="btn zx__animation zx__LoginWith" id="zx__LoginWithFB" style="--animasi_INS: 3; --animasi_EXS: 24">
+                    <img
+                      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAB7klEQVR4nO3bz0sCQRQH8PlD6hj9Bx0Uo/oD6lDQbkLSsaBuQZ4CL0GHIEp37cdFEKKWbkVBiURRIB0igiKLjAiytl8IWZrTrlC3cFeHfbszb+Cd530/I4/18AgxTqA/2uyXVM0vKe9+WaVcl5HRJ6vrvmCslfyFlxUdvDHHS9HbggtNpPry4M3AlE9SVokQP/v/SlLfCHgTwIUA0A1AFwJANwBdCADdgJXqG0vS+eQhzZze0dz9C/0olmitwwVAz0iCbu1d0EqlZl7+AMIz25ZemkuAybkdWi5/1x3e0wChiTX6VWosvGcBOgYXaTb31HB4zwJMxdNMwnsW4Pw6Ly7AUFhjFt6TALOJA7EBUkdXtgKeXT7QSCxFe0eTtCu0VPe9rgHI3uqWw69snNDAQJzJva4ByOsFyy/PKryrAIqf1j57I9Fdpve6BsDqMf8ZCg3QaXwtCg3A+l4EgA6OAKIAOHkenwtiA+wf34gNsKxlxAYYn94UG6B7OCEugJ0ByCWAnQHIJYCdAcglgJ0ByCWAnQHoKAArINb3IgB0cARAAARAAARAAARAAARAAARAAARAAARAAARwHMAli5MwAMorMReJocODAUiqRswtajcsTzsPoOjtstJS3SA3t6jNRWJzl5Z7ADOj8fK/4X8ATG4tMQ/iVg8AAAAASUVORK5CYII="
+                      alt="icons"
+                      width="25"
+                    />
+                    Continue with FACEBOOK
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="zx__ParentSignUp">
+              <div class="zx__SignUPLeft">
+                <h2 class="zx__animation" style="--animasi_INS: 17; --animasi_EXS: 1">
+                  HAVE A NICE DAY. . !
+                  <p>#ENJOY WITH ME.! #ZHAENX404</p>
+                </h2>
+                <div class="zx__RandomQuotes zx__animation" style="--animasi_INS: 18; --animasi_EXS: 2">
+                  <p id="quoteText" class="quoteText"></p>
+                </div>
+                <div class="zx_SignUWith">
+                  <button class="btn zx__animation mb-3 zx__LoginWith" id="zx__LoginWithGoogle" style="--animasi_INS: 19; --animasi_EXS: 3">
+                    <img
+                      src="data:image/png;base64,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"
+                      alt="icons"
+                      width="25"
+                    />
+                    Continue with Google</button
+                  ><button class="btn zx__animation zx__LoginWith" id="zx__LoginWithFB" style="--animasi_INS: 20; --animasi_EXS: 4">
+                    <img
+                      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAB7klEQVR4nO3bz0sCQRQH8PlD6hj9Bx0Uo/oD6lDQbkLSsaBuQZ4CL0GHIEp37cdFEKKWbkVBiURRIB0igiKLjAiytl8IWZrTrlC3cFeHfbszb+Cd530/I4/18AgxTqA/2uyXVM0vKe9+WaVcl5HRJ6vrvmCslfyFlxUdvDHHS9HbggtNpPry4M3AlE9SVokQP/v/SlLfCHgTwIUA0A1AFwJANwBdCADdgJXqG0vS+eQhzZze0dz9C/0olmitwwVAz0iCbu1d0EqlZl7+AMIz25ZemkuAybkdWi5/1x3e0wChiTX6VWosvGcBOgYXaTb31HB4zwJMxdNMwnsW4Pw6Ly7AUFhjFt6TALOJA7EBUkdXtgKeXT7QSCxFe0eTtCu0VPe9rgHI3uqWw69snNDAQJzJva4ByOsFyy/PKryrAIqf1j57I9Fdpve6BsDqMf8ZCg3QaXwtCg3A+l4EgA6OAKIAOHkenwtiA+wf34gNsKxlxAYYn94UG6B7OCEugJ0ByCWAnQHIJYCdAcglgJ0ByCWAnQHoKAArINb3IgB0cARAAARAAARAAARAAARAAARAAARAAARAAARwHMAli5MwAMorMReJocODAUiqRswtajcsTzsPoOjtstJS3SA3t6jNRWJzl5Z7ADOj8fK/4X8ATG4tMQ/iVg8AAAAASUVORK5CYII="
+                      alt="icons"
+                      width="25"
+                    />
+                    Continue with FACEBOOK
+                  </button>
+                </div>
+              </div>
+              <div class="zx__SignUPRight">
+                <h2 class="zx__animation" style="--animasi_INS: 16; --animasi_EXS: 0">DAFTAR</h2>
+                <div class="zx__BoxFormSignUP">
+                  <form>
+                    <div class="zx__animation position-relative BoxInput" style="--animasi_INS: 17; --animasi_EXS: 1">
+                      <input type="text" class="form-control zx__input" id="InputNama" required="" value="" /><label for="InputNama" class="form-label zx__label">Nama Lengkap</label>
+                    </div>
+                    <div class="zx__animation position-relative BoxInput" style="--animasi_INS: 18; --animasi_EXS: 2">
+                      <input type="email" class="form-control zx__input" autocomplete="email" id="InputEmail" aria-describedby="emailHelp" required="" value="" /><label
+                        for="InputEmail"
+                        class="form-label zx__label"
+                        >Masukkan Email</label
+                      >
+                    </div>
+                    <div class="zx__animation position-relative BoxInput" style="--animasi_INS: 19; --animasi_EXS: 3">
+                      <input type="password" class="form-control zx__input" autocomplete="password" id="InputPassword" required="" value="" /><label for="InputPassword" class="form-label zx__label"
+                        >Masukkan Password</label
+                      >
+                    </div>
+                    <div class="zx__animation Alamat-NoHP d-flex justify-content-between position-relative" style="--animasi_INS: 20; --animasi_EXS: 4">
+                      <div class="zx__animation position-relative BoxInput pe-1 mb-2">
+                        <input type="text" class="form-control zx__input" id="InputAlamat" required="" value="" /><label for="InputAlamat" class="form-label zx__label">Alamat Rumah</label>
+                      </div>
+                      <div class="zx__animation position-relative BoxInput ps-1 mb-2">
+                        <input type="tel" class="form-control zx__input" id="InputNoHp" required="" value="" /><label for="InputNoHp" class="form-label zx__label">No.Handphone</label>
+                      </div>
+                    </div>
+                    <div class="zx__animation position-relative BoxInput my-1" style="--animasi_INS: 21; --animasi_EXS: 5">
+                      <input class="form-control form-control-sm" id="formFile" type="file" required="" accept=".jpg,.jpeg,.png" />
+                    </div>
+                    <div class="zx__animation zx__SubmitSingUp justify-content-center d-flex my-3" style="--animasi_INS: 22; --animasi_EXS: 6">
+                      <button class="btn zx__ButtonFirst" id="zx__SubmitSingUp" type="submit">SIGN-UP</button>
+                    </div>
+                    <h6 class="zx__animation text-center my-2" style="--animasi_INS: 23; --animasi_EXS: 7">
+                      Sudah punya akun Belom. . .? Kalo udah punya langsung login<a class="LinkToLogin ms-1 btn" id="LinkToLogin">Disini!</a>
+                    </h6>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/static/js/loginStyle.js"></script>
+  </body>
+</html>
