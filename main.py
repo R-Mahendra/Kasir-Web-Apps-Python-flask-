@@ -18,7 +18,6 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import redirect, url_for
 
 
 # ========================================================================
@@ -33,8 +32,7 @@ app = Flask(__name__)
 # Harus random dan rahasia untuk keamanan aplikasi
 # Key ini di-generate menggunakan cryptographic random generator
 app.secret_key = "53616c7465645f5ff22da9cb2932309bc5d27f5fb2f59d57bca3150476f82a19"
-# VALID_EMAIL = "zhaenx_id@yeswehack.com"
-# VALID_PASSWORD = "zh43nx"
+
 
 app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_HTTPONLY"] = True
