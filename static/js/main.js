@@ -636,7 +636,14 @@ window.addEventListener("scroll", () => {
 
   // Memperbarui kelas aktif pada tautan navigasi sesuai dengan posisi scroll
   navLinks.forEach((link) => {
-    const section = document.querySelector(link.getAttribute("href"));
+    const target = link.getAttribute("href");
+
+    // Skip kalau href kosong, "#", atau bukan selector section
+    if (!target || target === "#") return;
+
+    const section = document.querySelector(target);
+    if (!section) return;
+
     const sectionTop = section.offsetTop - navbar.offsetHeight;
     const sectionHeight = section.offsetHeight;
 
@@ -693,6 +700,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // realtime tanpa refresh
   window.addEventListener("resize", toggleMobileAlert);
+});
+document.querySelectorAll(".zx__Root").forEach((el) => {
+  el.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+  });
 });
 
 // ================================================Start scroll reveals============================================================== //

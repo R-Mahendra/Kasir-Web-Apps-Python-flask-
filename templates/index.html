@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top p-2">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top p-2 zx__Root">
       <div class="container">
         <img src="/static/img/BSI.png" class="img-thumbnail" alt="BSI" />
         <img src="/static/img/kdk.jpg" class="img-thumbnail mx-3" alt="BSI" />
@@ -44,7 +44,7 @@
             </li>
           </ul>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="dropdownToggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Other</a>
+            <a class="nav-link dropdown-toggle" id="dropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Other</a>
             <ul class="dropdown-menu" id="dropdownMenu">
               <li>
                 <a class="dropdown-item" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i class="bi bi-cart4 fs-4 me-2"></i>Keranjang</a>
@@ -61,7 +61,7 @@
       </div>
     </nav>
 
-    <section id="Menu">
+    <section id="Menu" class="zx__Root">
       <div class="container">
         <div class="row d-flex justify-content-center align-items-center">
           {% set icons = { "Makanan": "bi-egg-fried", "Minuman": "bi-cup-straw", "Makanan ringan": "bi-cake2-fill" } %} {% for kategori, items in menu.items() %}
@@ -95,7 +95,7 @@
       <!-- CSRF token jika pakai Flask-WTF -->
     </form>
     <div class="offcanvas offcanvas-end canvas-parent" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel" data-bs-scroll="true" data-bs-backdrop="false">
-      <div class="offcanvas-header canvas-header d-flex justify-content-between align-items-center">
+      <div class="offcanvas-header canvas-header d-flex justify-content-between align-items-center zx__Root">
         <h4 class="offcanvas-title" id="offcanvasRightLabel">Struk Pembayaran</h4>
         <button type="button" class="btn-closes" data-bs-dismiss="offcanvas">
           <i class="bi bi-x-square-fill"></i>
@@ -105,22 +105,22 @@
         <!-- FORM -->
         <div class="card-form d-flex justify-content-between align-items-center mb-4">
           <div class="mb-0 col-lg-6">
-            <label class="form-label"> <i class="bi bi-people-fill"></i> Nama Pembeli : </label>
+            <label class="form-label zx__Root"> <i class="bi bi-people-fill"></i> Nama Pembeli : </label>
             <input type="text" class="form-control" id="inputNamaPembeli" placeholder="Input Nama..." required maxlength="30" />
           </div>
           <div class="mb-0 col-lg-5">
-            <label class="form-label"> <i class="bi bi-coin"></i> Bayar (Cash) Rp : </label>
+            <label class="form-label zx__Root"> <i class="bi bi-coin"></i> Bayar (Cash) Rp : </label>
             <input type="text" class="form-control" id="inputCash" placeholder="Input Jumlah Uang..." required />
           </div>
         </div>
         <!-- CART WRAPPER -->
-        <div class="wrapper" id="wrapper"></div>
-        <div class="totasssssl d-flex p-2">
+        <div class="wrapper zx__Root" id="wrapper"></div>
+        <div class="totasssssl d-flex p-2 zx__Root">
           <h6 class="me-3 mb-0">Total :</h6>
           <h6 class="mb-0" id="testTotal"></h6>
         </div>
         <!-- TOTAL -->
-        <div class="subtotal">
+        <div class="subtotal zx__Root">
           <h4 class="text-center"><i class="bi bi-wallet"></i> Rincian Total</h4>
           <div class="container mt-4">
             <div class="row d-flex justify-content-center align-items-center">
@@ -187,7 +187,7 @@
       </div>
     </div>
     <!-- Team Styyle -->
-    <section id="Team">
+    <section id="Team" class="zx__Root">
       <div class="container">
         <h1 class="h1team">Our Team</h1>
         <div class="row d-flex justify-content-center align-items-center">
@@ -247,7 +247,7 @@
       </div>
     </section>
     <footer>
-      <div class="container-fluid">
+      <div class="container-fluid zx__Root">
         <div class="row d-flex justify-content-between align-items-center">
           <div class="col-4 col-lg-3">
             <p class="mb-0 text-center" id="copy"></p>
@@ -265,13 +265,13 @@
       <div id="alertBox-Success" class="alertBox d-none">
         <div class="textalert text-center">
           <h5><i class="bi bi-check-square-fill fs-4"></i> Success</h5>
-          <h5 id="alertMessageSuccess"></h5>
+          <h5 id="alertMessageSuccess" class="zx__Root"></h5>
         </div>
       </div>
       <div id="alertBox-Warning" class="alertBox d-none">
         <div class="textalert text-center">
           <h5><i class="bi bi-exclamation-square-fill fs-4"></i> Warning</h5>
-          <h5 id="alertMessageWarning"></h5>
+          <h5 id="alertMessageWarning" class="zx__Root"></h5>
         </div>
       </div>
       <!-- <div id="alertBox-Error" class="alertBox">
