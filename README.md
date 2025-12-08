@@ -392,7 +392,7 @@ python app.py
 
 <div align="center">
 
-### Made with ❤️ by Kelompok 4
+### Made with ❤️ by Kelompok 3 | Universitas Bina Sarana Informatika (UBSI Cikarang)
 
 **⭐ Star this repository if you found it helpful!**
 
