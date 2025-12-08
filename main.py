@@ -102,7 +102,10 @@ def login():
 
         # Input kosong
         if not email or not password:
-            return render_template("login.html", error="Email dan password harus diisi"), 401
+            return (
+                render_template("login.html", error="Email dan password harus diisi"),
+                401,
+            )
 
         # Cek kredensial
         if email in USERS and check_password_hash(USERS[email], password):
@@ -119,7 +122,10 @@ def login():
             return redirect(next_page if next_page else url_for("index"))
 
         else:
-            return render_template("login.html", error="Email atau password salah...!"), 401
+            return (
+                render_template("login.html", error="Email atau password salah...!"),
+                401,
+            )
 
     # GET request
     timeout = request.args.get("timeout")
@@ -1210,7 +1216,7 @@ def generate_struk():
         try:
             # ImageReader = ReportLab class untuk load dan process images
             # Support: PNG, JPG, GIF
-            logo = ImageReader("static/img/logo.png")
+            logo = ImageReader("static/img/LogoUBSI.png")
 
             # Draw image pada canvas
             # Parameters:
@@ -1223,8 +1229,8 @@ def generate_struk():
                 logo,
                 (595 / 2) - 40,  # X coordinate
                 750,  # Y coordinate
-                width=80,
-                height=80,
+                width=85,
+                height=85,
                 preserveAspectRatio=True,
             )
 
