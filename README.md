@@ -1,5 +1,4 @@
-<img width="208" height="45" alt="image" src="https://github.com/user-attachments/assets/32ef586d-eea1-4dc3-9a8c-1b82deca2aff" /><div align="center">
-<h1>🍽️ Sistem Kasir Restoran Digital</h1>
+<h1>Sistem Kasir Restoran Digital</h1>
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0+-green.svg)
