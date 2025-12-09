@@ -5,21 +5,26 @@
 ![Flask](https://img.shields.io/badge/Flask-3.0+-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Status](https://img.shields.io/badge/Status-Production%20Ready-success.svg)
+
 </div>
 
 ## 📌 Deskripsi
+
 <div align="center">
 Aplikasi ini adalah sistem kasir digital berbasis web yang dibangun menggunakan Flask.
 Tujuan utamanya adalah mempermudah proses pemesanan dengan menyediakan fitur pengelolaan keranjang, perhitungan otomatis (subtotal, diskon, PPN, total), dan kemampuan untuk mengunduh struk dalam bentuk PDF lengkap dengan logo restoran.
 
 Dikembangkan oleh Kelompok 3 sebagai project akhir (UTS) mata kuliah Dasar pemprograman.<br>
 Universitas Bina Sarana Informatika (Cikarang).
+
 </div>
 
 ---
 
 ## ✨ Features
+
 ### 🔐 **Authentication System**
+
 - ✅ Secure login dengan session management
 - ✅ Auto-logout setelah 1 jam inactivity
 - ✅ Route protection dengan decorator pattern
@@ -27,6 +32,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 - ✅ Prevention dari back-button attacks
 
 ### 🛒 **Shopping Cart**
+
 - ✅ Real-time cart updates (no page reload)
 - ✅ Add, Plus, Minus, Remove operations
 - ✅ Auto-remove item ketika quantity = 0
@@ -34,6 +40,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 - ✅ Session-based storage
 
 ### 💰 **Payment Processing**
+
 - ✅ Auto-calculation: Subtotal, Diskon 10%, PPN 10%
 - ✅ Real-time total calculation
 - ✅ Input validation (nama, cash amount)
@@ -41,6 +48,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 - ✅ Error handling untuk insufficient funds
 
 ### 📄 **PDF Receipt Generator**
+
 - ✅ Professional PDF layout dengan ReportLab
 - ✅ In-memory generation (no disk I/O)
 - ✅ Auto page-break untuk long receipts
@@ -49,6 +57,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 - ✅ Compatible dengan semua browsers & download managers
 
 ### 🎨 **Modern UI/UX**
+
 - ✅ Responsive design (Desktop, Tablet, Mobile)
 - ✅ Bootstrap 5 framework
 - ✅ Smooth animations
@@ -63,12 +72,14 @@ Universitas Bina Sarana Informatika (Cikarang).
 <summary>Click to view all screenshots</summary>
 
 ### 1. Login Page
+
 - Modern design
 - Error handling dengan animations
 
 ![Login Demo](https://i.ibb.co.com/pvmjfSdF/login-Page.png/200x200/667eea/ffffff?text=Login+Page)
 
 ### 2. Menu Display
+
 - Card-based layout
 - Category navigation
 - Clear pricing
@@ -76,6 +87,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 ![Dashboard Demo](https://i.ibb.co.com/x86Q1Td7/maindashoard.png/200x200/764ba2/ffffff?text=Dashboard)
 
 ### 3. Shopping Cart
+
 - Real-time updates
 - Quantity controls
 - Total breakdown
@@ -83,6 +95,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 ![Dashboard Demo](https://i.ibb.co.com/rKBkZYKS/cart.png/200x200/764ba2/ffffff?text=Dashboard)
 
 ### 4. Checkout Process
+
 - Customer information
 - Payment calculation
 - Receipt generation
@@ -90,6 +103,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 ![Dashboard Demo](https://i.ibb.co.com/LDZq47bG/check-Out.png/200x200/764ba2/ffffff?text=Dashboard)
 
 ### 5. PDF Receipt
+
 - Professional layout
 - Complete transaction details
 - Business information
@@ -103,11 +117,13 @@ Universitas Bina Sarana Informatika (Cikarang).
 ## 🛠️ Tech Stack
 
 ### Backend
+
 - **Flask 3.0+** - Python web framework
 - **ReportLab** - PDF generation library
 - **Werkzeug** - Security utilities (session, cookies)
 
 ### Frontend
+
 - **HTML5** - Semantic markup
 - **CSS3** - Modern styling
 - **Bootstrap 5.3** - Responsive framework
@@ -116,6 +132,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 - **Scrollrevealjs** - Animation Scrolling
 
 ### Storage
+
 - **Flask Session** - Server-side session management
 - **JSON** - Menu data storage
 
@@ -124,17 +141,20 @@ Universitas Bina Sarana Informatika (Cikarang).
 ## 📦 Installation
 
 ### Prerequisites
+
 - Python 3.8 or higher
 - pip (Python package manager)
 - Git (optional)
 
 ### Step 1: Clone Repository
+
 ```bash
-git clone https://github.com/R-Mahendra/Kasir-Web-Apps-Python-flask-.git
+git clone https://github.com/R-Mahendra/Kasir-Web-Apps-Python-flask.git
 cd Kasir-Web-Apps-Python-flask
 ```
 
 ### Step 2: Create Virtual Environment (Recommended)
+
 ```bash
 # Windows
 python -m venv venv
@@ -146,11 +166,13 @@ source venv/bin/activate
 ```
 
 ### Step 3: Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 **requirements.txt:**
+
 ```txt
 Flask==3.0.0
 reportlab==4.0.7
@@ -158,6 +180,7 @@ Werkzeug==3.0.1
 ```
 
 ### Step 4: Setup Project Structure
+
 ```
 project/
 ├── app.py                 # Main Flask application
@@ -178,7 +201,9 @@ project/
 ```
 
 ### Step 5: Configure Menu Data
+
 Create `data/menu.json`:
+
 ```json
 {
   "makanan": [
@@ -201,6 +226,7 @@ Create `data/menu.json`:
 ```
 
 ### Step 6: Run Application
+
 ```bash
 python main.py
 ```
@@ -212,7 +238,9 @@ Application akan running di: **http://localhost:5000**
 ## 🚀 Usage
 
 ### 1. Login
+
 **Credentials:**
+
 ```
 Email: zhaenx_id@yeswehack.com
 Password: zh43nx
@@ -224,12 +252,14 @@ Password: zh43nx
 4. Click **Login**
 
 ### 2. Add Items to Cart
+
 1. Browse menu categories
 2. Click **Add to Cart** button pada item yang diinginkan
 3. Item akan muncul di cart sidebar
 4. Adjust quantity dengan **+** dan **-** buttons
 
 ### 3. Process Payment
+
 1. Scroll ke bagian **Checkout**
 2. Enter nama pembeli
 3. Enter jumlah uang yang dibayar
@@ -237,17 +267,20 @@ Password: zh43nx
 5. View payment breakdown (subtotal, diskon, PPN, total, kembalian)
 
 ### 4. Download Receipt
+
 1. Setelah payment processed
 2. Click **Download Struk**
 3. PDF akan auto-download
 4. Open dan print receipt
 
 ### 5. Clear Cart
+
 - Click **Clear Cart** button untuk reset
 - Confirmation dialog akan muncul
 - All items akan dihapus
 
 ### 6. Logout
+
 1. Click username dropdown di navbar
 2. Click **Logout**
 3. Confirm logout
@@ -311,11 +344,11 @@ in the Software without restriction...
 
 **Kelompok 3 - Tim Pengembang**
 
-| Name | NIM |
-|------|--------|
-| Reza Mahendra | 17250007 |
-| Rifqy Ardian Adinata | 17250522 |
-| Fitria Haryani | 17250015 |
+| Name                  | NIM      |
+| --------------------- | -------- |
+| Reza Mahendra         | 17250007 |
+| Rifqy Ardian Adinata  | 17250522 |
+| Fitria Haryani        | 17250015 |
 | Muhamad Bagas Triandy | 17250036 |
 | Cheril Aprillia Putri | 17250385 |
 
@@ -351,7 +384,7 @@ Project ini dikembangkan untuk tujuan edukasi dalam mata kuliah **Pemrograman We
 
 ```bash
 # 1. Clone
-git clone https://github.com/R-Mahendra/Kasir-Web-Apps-Python-flask-.git
+git clone https://github.com/R-Mahendra/Kasir-Web-Apps-Python-flask.git
 cd Kasir-Web-Apps-Python-flask
 
 # 2. Install
@@ -371,6 +404,7 @@ python main.py
 ## 📝 Changelog
 
 ### Version 5.1.0 (2025-12-08)
+
 - ✨ Initial release
 - ✅ Authentication system
 - ✅ Cart management
