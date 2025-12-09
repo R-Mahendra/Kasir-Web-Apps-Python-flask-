@@ -14,7 +14,6 @@ from flask import (
 )
 from flask_login import login_required
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -1067,473 +1066,291 @@ def cart_clear():
 @login_required
 def generate_struk():
     """
-    Generate dan download PDF struk pembayaran
-
-    Endpoint ini melakukan:
-    1. Validasi cart dan input pembeli
-    2. Generate PDF dengan ReportLab di memory (BytesIO)
-    3. Return PDF binary untuk di-download browser
-
-    Features:
-        - Professional PDF layout dengan logo
-        - Auto page-break untuk long receipts
-        - Unique filename dengan timestamp
-        - Support JSON dan Form data
-        - Compatible dengan semua browser & download managers
-
-    Request Methods:
-        JSON (AJAX):
-            POST /generate_struk
-            Content-Type: application/json
-            Body: {"nama": "John", "cash": 100000}
-
-        Form Data (Traditional):
-            POST /generate_struk
-            Content-Type: application/x-www-form-urlencoded
-            Body: nama=John&cash=100000
-
-    Response:
-        Success: PDF Binary (application/pdf) dengan status 200
-        Error: JSON {"error": "..."} dengan status 400/500
+    Generate dan download PDF struk pembayaran format thermal (80mm)
+    Format struk seperti Indomaret/Alfamart
     """
 
     try:
         # ============================================================
-        # STEP 1: VALIDASI CART TIDAK KOSONG
+        # STEP 1-4: VALIDASI & PERHITUNGAN (Sama seperti sebelumnya)
         # ============================================================
 
-        # Ambil cart dari session
-        # Default empty list jika session baru atau cart sudah di-clear
         cart = session.get("jumlahcart", [])
-
-        # Validasi: cart minimal harus punya 1 item
-        # Prevent generate struk untuk transaksi kosong
         if not cart:
-            # Return JSON error dengan status 400 Bad Request
             return jsonify({"error": "Keranjang kosong"}), 400
 
-        # ============================================================
-        # STEP 2: SUPPORT MULTIPLE INPUT FORMATS
-        # ============================================================
-
-        # Flask bisa terima data dalam 2 format:
-        # 1. JSON - untuk AJAX/fetch requests (modern)
-        # 2. Form Data - untuk traditional form submission (legacy)
-
         if request.is_json:
-            # Request dengan Content-Type: application/json
-            # Parse JSON body ke Python dict
             data = request.get_json()
         else:
-            # Request dengan Content-Type: application/x-www-form-urlencoded
-            # atau multipart/form-data
-            # Convert ImmutableMultiDict ke regular dict
             data = request.form.to_dict()
 
-        # ============================================================
-        # STEP 3: VALIDASI & EXTRACT INPUT PEMBELI
-        # ============================================================
-
-        # Extract nama pembeli
-        # .get("nama", "") = return empty string jika key tidak ada
-        # .strip() = remove leading/trailing whitespace
-        # Contoh: "  John Doe  " → "John Doe"
         nama = data.get("nama", "").strip()
 
-        # Validasi & convert cash ke integer
         try:
-            # int() convert string ke integer
-            # Rupiah tidak ada decimal, jadi int sudah cukup
             cash = int(data.get("cash", 0))
-
         except (ValueError, TypeError):
-            # ValueError: input bukan angka (contoh: "abc", "12.5")
-            # TypeError: input None atau type yang tidak compatible
-
-            # Return user-friendly error message
             return jsonify({"error": "Jumlah uang tidak valid"}), 400
 
-        # ============================================================
-        # STEP 4: HITUNG TOTAL & KEMBALIAN
-        # ============================================================
-
-        # Hitung subtotal dari semua items
-        # Generator expression: (expr for item in list)
-        # Lebih memory efficient daripada list comprehension
         subtotal = sum(item["price"] * item["qty"] for item in cart)
-
-        # Hitung diskon, PPN, dan total akhir
-        # Menggunakan helper function yang sudah kita buat sebelumnya
-        # Return tuple: (diskon, ppn, total)
         diskon, ppn, total = hitung_total(subtotal)
-
-        # Hitung kembalian
-        # Simple: uang yang dibayar - total yang harus dibayar
         kembalian = cash - total
 
-        # Validasi: uang harus cukup
-        # Jika cash < total, return error
         if cash < total:
             return jsonify({"error": "Uang tidak cukup"}), 400
 
         # ============================================================
-        # STEP 5: INISIALISASI PDF - CREATE BUFFER
+        # STEP 5: INISIALISASI PDF - THERMAL SIZE (80mm width)
         # ============================================================
 
-        # BytesIO = in-memory binary stream (file-like object)
-        # Keuntungan menggunakan BytesIO vs file di disk:
-        # 1. Faster - no disk I/O overhead
-        # 2. Cleaner - no temporary file cleanup needed
-        # 3. Secure - file tidak tersimpan di server
-        # 4. Scalable - bisa handle concurrent requests tanpa file conflicts
         buffer = io.BytesIO()
 
-        # Create PDF Canvas object
-        # Canvas = drawing surface untuk create PDF
-        # pagesize=A4 = standar internasional (595 × 842 points)
-        # 1 point = 1/72 inch
-        pdf = canvas.Canvas(buffer, pagesize=A4)
+        # THERMAL PAPER SIZE
+        # 80mm width = 226.77 points (80mm * 72/25.4)
+        # Height flexible untuk accommodate content
+        # Common thermal: 80mm x 200mm or longer
+        THERMAL_WIDTH = 226.77  # 80mm in points
+        THERMAL_HEIGHT = 600  # Flexible height, akan adjust otomatis
+
+        pdf = canvas.Canvas(buffer, pagesize=(THERMAL_WIDTH, THERMAL_HEIGHT))
 
         # ============================================================
-        # STEP 6: PDF HEADER - TITLE
+        # MARGINS & POSITIONING untuk thermal receipt
         # ============================================================
 
-        # Set font untuk title
-        # Helvetica-Bold = built-in font di ReportLab (tidak perlu install)
-        # Size 16 = large untuk title
-        pdf.setFont("Helvetica-Bold", 16)
+        LEFT_MARGIN = 10  # 10 points from left
+        RIGHT_MARGIN = 216.77  # 10 points from right (226.77 - 10)
+        CENTER_X = THERMAL_WIDTH / 2  # 113.385 points
 
-        # Draw centered text
-        # Coordinate system: (0,0) = bottom-left corner
-        # X=300 ≈ center (A4 width = 595 points)
-        # Y=725 = near top of page
-        pdf.drawCentredString(300, 725, "Restoran Kelompok 3")
+        # Start from top
+        y = THERMAL_HEIGHT - 70  # Start 40 points from top
 
         # ============================================================
-        # STEP 7: PDF HEADER - LOGO
+        # STEP 6: HEADER - LOGO (Smaller, centered)
         # ============================================================
 
         try:
-            # ImageReader = ReportLab class untuk load dan process images
-            # Support: PNG, JPG, GIF
             logo = ImageReader("static/img/LogoUBSI.png")
 
-            # Draw image pada canvas
-            # Parameters:
-            # - image: ImageReader object
-            # - x: (595/2 - 40) = center X position minus half of image width
-            # - y: 750 = near top, above title
-            # - width, height: 80x80 pixels
-            # - preserveAspectRatio: True = maintain original ratio (no distortion)
+            # Logo lebih kecil untuk thermal receipt
+            logo_size = 60  # 50x50 points
+            logo_x = (THERMAL_WIDTH - logo_size) / 2  # Center horizontally
+
             pdf.drawImage(
                 logo,
-                (595 / 2) - 40,  # X coordinate
-                750,  # Y coordinate
-                width=85,
-                height=85,
+                logo_x,
+                y,
+                width=logo_size,
+                height=logo_size,
                 preserveAspectRatio=True,
             )
+            y -= 20  # Move down after logo
 
         except Exception as e:
-            # Exception bisa terjadi jika:
-            # - File tidak ditemukan
-            # - File corrupt
-            # - Format tidak supported
-
-            # Log warning tapi TIDAK stop execution
-            # PDF generation tetap lanjut tanpa logo
-            # This is graceful degradation
             app.logger.warning(f"Logo not found: {str(e)}")
 
         # ============================================================
-        # STEP 8: PDF HEADER - INFO RESTORAN
+        # STEP 7: HEADER - STORE NAME & INFO
         # ============================================================
 
-        # Change font ke normal (non-bold) dengan size lebih kecil
-        pdf.setFont("Helvetica", 10)
+        # Store name - Bold, slightly larger
+        pdf.setFont("Helvetica-Bold", 11)
+        pdf.drawCentredString(CENTER_X, y, "RESTORAN KELOMPOK 3")
+        y -= 15
 
-        # Alamat restoran - centered, multi-line text dalam 1 string
+        # Address - Smaller font for thermal
+        pdf.setFont("Helvetica", 7)
+
+        # Multi-line address untuk thermal receipt
+        address_lines = [
+            "Cikarang Square",
+            "Jl. Cibarusah Raya No.168",
+            "Pasirsari, Cikarang Sel",
+            "Kab.Bekasi, Jawa Barat 17550",
+        ]
+
+        for line in address_lines:
+            pdf.drawCentredString(CENTER_X, y, line)
+            y -= 10
+
+        # Date & Time
         pdf.drawCentredString(
-            300,  # X: center
-            695,  # Y: below title
-            "Cikarang Square, Jl. Cibarusah Raya No.168, Pasirsari, "
-            "Cikarang Sel, Kab.Bekasi, Jawa Barat 17550",
+            CENTER_X, y, datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
         )
+        y -= 15
 
-        # Tanggal dan waktu transaksi
-        # datetime.now() = current date/time
-        # strftime() = format datetime ke string
-        # Format: DD-MM-YYYY HH:MM (24-hour format)
-        pdf.drawCentredString(
-            290,  # X: slightly left of center
-            682,  # Y: below address
-            f"Tanggal: {datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}",
-        )
-
-        # Horizontal line sebagai separator
-        # line(x1, y1, x2, y2) draws line from point 1 to point 2
-        # kiri margin (40) ke kanan margin (550)
-        pdf.line(40, 670, 550, 670)
+        # Separator line
+        pdf.setLineWidth(0.5)
+        pdf.line(LEFT_MARGIN, y, RIGHT_MARGIN, y)
+        y -= 15
 
         # ============================================================
-        # STEP 9: PDF BODY - NAMA PEMBELI
+        # STEP 8: CUSTOMER NAME
         # ============================================================
 
-        # Variable y = vertical cursor position
-        # Kita track y position untuk:
-        # 1. Control spacing antar lines
-        # 2. Detect kapan perlu page break
-        # 3. Ensure text tidak overlap
-        y = 650  # Start position below header separator
+        pdf.setFont("Helvetica", 8)
+        pdf.drawString(LEFT_MARGIN, y, f"Customer : {nama}")
+        y -= 15
 
-        # Bold font untuk labels
-        pdf.setFont("Helvetica-Bold", 12)
-
-        # Draw text left-aligned
-        # drawString (bukan drawCentredString) = left aligned dari X position
-        pdf.drawString(40, y, f"Nama Pembeli: {nama}")
-
-        # Move cursor down
-        # Y coordinate decreases saat move down (bottom-up coordinate system)
-        y -= 25  # Spacing 25 points untuk section
+        # Separator
+        pdf.line(LEFT_MARGIN, y, RIGHT_MARGIN, y)
+        y -= 15
 
         # ============================================================
-        # STEP 10: PDF BODY - DAFTAR PEMBELIAN
+        # STEP 9: ITEMS LIST
         # ============================================================
 
-        # Section header
-        pdf.setFont("Helvetica-Bold", 12)
-        pdf.drawString(40, y, "Daftar Pembelian:")
-        y -= 20  # Smaller spacing untuk sub-section
+        pdf.setFont("Helvetica-Bold", 8)
+        pdf.drawString(LEFT_MARGIN, y, "PESANAN")
+        pdf.drawRightString(RIGHT_MARGIN, y, "TOTAL")
+        y -= 12
 
-        # Change to normal font untuk list items
-        pdf.setFont("Helvetica", 11)
+        # Thin separator
+        pdf.setLineWidth(0.3)
+        pdf.line(LEFT_MARGIN, y, RIGHT_MARGIN, y)
+        y -= 12
 
-        # Loop setiap item di cart
+        # Items - Regular font
+        pdf.setFont("Helvetica", 8)
+
         for item in cart:
-            # Left column: Item name dan quantity
-            # Format: "Nasi Goreng  x2"
-            # 2 spaces sebelum 'x' untuk readability
-            pdf.drawString(40, y, f"{item['nama']}  x{item['qty']}")
+            # Item name
+            item_name = item["nama"]
 
-            # Right column: Price per item × quantity
-            # drawRightString = text right-aligned dari X position
-            # X=550 = right margin
-            # :, = thousand separator formatting
-            # Contoh: 25000 → "25,000"
-            pdf.drawRightString(550, y, f"Rp {item['price'] * item['qty']:,}")
+            # Truncate long names untuk fit thermal width
+            # if len(item_name) > 25:
+            #     item_name = item_name[:22] + "..."
 
-            # Move to next line
-            y -= 20
+            pdf.drawString(LEFT_MARGIN, y, item_name)
+            y -= 10
 
-            # CRITICAL: Page overflow handling
-            # Check if approaching bottom of page
-            # 100 points = safety margin from bottom
+            # Quantity and price on next line, indented
+            qty_price_text = f"  {item['qty']} x Rp {item['price']:,}"
+            item_total = item["price"] * item["qty"]
+
+            pdf.drawString(LEFT_MARGIN, y, qty_price_text)
+            pdf.drawRightString(RIGHT_MARGIN, y, f"Rp {item_total:,}")
+            y -= 15
+
+            # Check if need new page (thermal roll continues)
             if y < 100:
-                # Finish current page dan start new page
-                # showPage() = commit current page, start fresh page
                 pdf.showPage()
-
-                # Reset cursor ke top of new page
-                # 750 ≈ near top dengan margin
-                y = 750
-
-                # Optional: Re-draw headers di new page
-                # (tidak implemented here, tapi bisa ditambahkan)
+                y = THERMAL_HEIGHT - 40
 
         # ============================================================
-        # STEP 11: PDF BODY - SEPARATOR LINE
+        # STEP 10: TOTALS SECTION
         # ============================================================
 
-        # Horizontal line sebelum total section
-        pdf.line(40, y, 550, y)
-        y -= 25  # Space setelah line
+        # Separator before totals
+        pdf.setLineWidth(0.5)
+        pdf.line(LEFT_MARGIN, y, RIGHT_MARGIN, y)
+        y -= 15
 
-        # ============================================================
-        # STEP 12: PDF BODY - RINCIAN TOTAL
-        # ============================================================
+        pdf.setFont("Helvetica", 8)
 
-        # Bold font untuk total section
-        pdf.setFont("Helvetica-Bold", 12)
+        # Subtotal
+        pdf.drawString(LEFT_MARGIN, y, "Subtotal")
+        pdf.drawRightString(RIGHT_MARGIN, y, f"Rp {subtotal:,}")
+        y -= 12
 
-        # ===== Subtotal =====
-        pdf.drawString(40, y, "Subtotal:")
-        pdf.drawRightString(550, y, f"Rp {subtotal:,}")
+        # Discount
+        pdf.drawString(LEFT_MARGIN, y, "Diskon (10%)")
+        pdf.drawRightString(RIGHT_MARGIN, y, f"Rp {diskon:,}")
+        y -= 12
+
+        # Tax
+        pdf.drawString(LEFT_MARGIN, y, "PPN (10%)")
+        pdf.drawRightString(RIGHT_MARGIN, y, f"Rp {ppn:,}")
+        y -= 15
+
+        # Bold separator for total
+        pdf.setLineWidth(1)
+        pdf.line(LEFT_MARGIN, y, RIGHT_MARGIN, y)
+        y -= 15
+
+        # TOTAL - Bold and larger
+        pdf.setFont("Helvetica-Bold", 10)
+        pdf.drawString(LEFT_MARGIN, y, "TOTAL")
+        pdf.drawRightString(RIGHT_MARGIN, y, f"Rp {total:,}")
+        y -= 15
+
+        # Separator
+        pdf.setLineWidth(0.5)
+        pdf.line(LEFT_MARGIN, y, RIGHT_MARGIN, y)
+        y -= 15
+
+        # Payment details
+        pdf.setFont("Helvetica", 8)
+        pdf.drawString(LEFT_MARGIN, y, "Bayar")
+        pdf.drawRightString(RIGHT_MARGIN, y, f"Rp {cash:,}")
+        y -= 12
+
+        pdf.drawString(LEFT_MARGIN, y, "Kembali")
+        pdf.drawRightString(RIGHT_MARGIN, y, f"Rp {kembalian:,}")
         y -= 20
 
-        # ===== Diskon 10% =====
-        pdf.drawString(40, y, "Diskon 10%:")
-        pdf.drawRightString(550, y, f"Rp {diskon:,}")
-        y -= 20
-
-        # ===== PPN 10% =====
-        # IMPORTANT: PPN dihitung dari DPP (setelah diskon)
-        # Bukan dari subtotal!
-        pdf.drawString(40, y, "PPN 10%:")
-        pdf.drawRightString(550, y, f"Rp {ppn:,}")
-        y -= 20
-
-        # ===== Total yang harus dibayar =====
-        pdf.drawString(40, y, "Total:")
-        pdf.drawRightString(550, y, f"Rp {total:,}")
-        y -= 20
-
-        # ===== Uang yang dibayar =====
-        pdf.drawString(40, y, "Uang Bayar:")
-        pdf.drawRightString(550, y, f"Rp {cash:,}")
-        y -= 20
-
-        # ===== Kembalian =====
-        pdf.drawString(40, y, "Kembalian:")
-        pdf.drawRightString(550, y, f"Rp {kembalian:,}")
-        y -= 50  # Larger spacing sebelum footer
-
         # ============================================================
-        # STEP 13: PDF FOOTER
+        # STEP 11: FOOTER
         # ============================================================
 
-        # Decorative line menggunakan underscore characters
-        # "_" * 76 = string dengan 76 underscore characters
-        # Creates visual separator line
-        pdf.drawString(40, y, "_" * 76)
-        y -= 20
+        # Separator
+        pdf.setLineWidth(0.5)
+        pdf.line(LEFT_MARGIN, y, RIGHT_MARGIN, y)
+        y -= 15
 
-        # Thank you message
-        # Not centered untuk simplicity, tapi positioned nicely
-        pdf.drawString(200, y, "Terimakasih sudah berkunjung.")
+        # Thank you message - centered
+        pdf.setFont("Helvetica-Bold", 8)
+        pdf.drawCentredString(CENTER_X, y, "TERIMA KASIH")
+        y -= 10
+
+        pdf.setFont("Helvetica", 7)
+        pdf.drawCentredString(CENTER_X, y, "Atas Kunjungan Anda")
+        y -= 15
+
+        # Footer info
+        pdf.setFont("Helvetica", 6)
+        pdf.drawCentredString(CENTER_X, y, "Powered by Kelompok 3")
+        y -= 10
+
+        pdf.drawCentredString(
+            CENTER_X, y, f"Struk: {datetime.datetime.now().strftime('%d%m%Y%H%M%S')}"
+        )
 
         # ============================================================
-        # STEP 14: FINALIZE PDF
+        # STEP 12-18: FINALIZE & RETURN (Sama seperti sebelumnya)
         # ============================================================
 
-        # CRITICAL STEP 1: Commit current page
-        # showPage() finalize current page dan add ke document
-        # Tanpa ini, halaman terakhir tidak akan muncul di PDF!
         pdf.showPage()
-
-        # CRITICAL STEP 2: Save PDF
-        # pdf.save() compile all drawing commands dan write ke buffer
-        # Ini menghasilkan actual PDF binary data
         pdf.save()
-
-        # CRITICAL STEP 3: Reset buffer pointer
-        # buffer.seek(0) move read pointer ke beginning of buffer
-        # Tanpa ini, subsequent read akan start dari end → 0 bytes!
-        # This is the most common bug dalam PDF generation
         buffer.seek(0)
 
-        # Debug: Print PDF size untuk verify generation successful
-        # getbuffer().nbytes = total bytes in buffer
-        # Typical receipt: 5-20 KB tergantung jumlah items
         print("PDF SIZE:", buffer.getbuffer().nbytes)
 
-        # ============================================================
-        # STEP 15: GENERATE FILENAME
-        # ============================================================
-
-        # Create unique filename dengan timestamp
-        # Format: struk-DD-MM-YYYY-HHMMSS.pdf
-        # Contoh: struk-27-11-2024-143052.pdf
-        #
-        # Benefits:
-        # - Unique: no filename conflicts
-        # - Sortable: chronological order
-        # - Descriptive: user knows when it was generated
         tanggal = datetime.datetime.now().strftime("%d-%m-%Y-%H%M%S")
         fileDownload = f"struk-{tanggal}.pdf"
 
-        # ============================================================
-        # STEP 16: CREATE RESPONSE WITH HEADERS
-        # ============================================================
-
-        # send_file() = Flask function untuk send file responses
-        # Parameters:
-        # - buffer: file-like object (BytesIO)
-        # - mimetype: Content-Type header
-        # - as_attachment: True = trigger download, False = open in browser
-        # - download_name: suggested filename untuk browser
         response = send_file(
             buffer,
-            mimetype="application/pdf",  # Tell browser this is PDF
-            as_attachment=True,  # Trigger download dialog
-            download_name=fileDownload,  # Suggested filename
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=fileDownload,
         )
 
-        # ============================================================
-        # STEP 17: ADD ADDITIONAL HEADERS
-        # ============================================================
-
-        # These headers improve compatibility dengan:
-        # - All browsers (Chrome, Firefox, Safari, Edge)
-        # - Download managers (IDM, Free Download Manager)
-        # - Mobile browsers
-        # - Corporate proxies/firewalls
-
-        # Cache-Control: Prevent browser dari caching PDF
-        # no-cache = always revalidate
-        # no-store = jangan simpan di disk
-        # must-revalidate = check with server before using cache
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-
-        # Pragma: Legacy HTTP/1.0 cache control (for old browsers)
         response.headers["Pragma"] = "no-cache"
-
-        # Expires: Set expiration date to past (immediate expiry)
         response.headers["Expires"] = "0"
-
-        # Content-Disposition: Tell browser how to handle file
-        # attachment = download file (bukan display inline)
-        # filename = suggested filename dengan quotes untuk special chars support
         response.headers["Content-Disposition"] = (
             f'attachment; filename="{fileDownload}"'
         )
-
-        # Content-Length: Size of response body in bytes
-        # Enables:
-        # - Download progress bar
-        # - Resume capability (untuk download managers)
-        # - Connection keep-alive optimization
         response.headers["Content-Length"] = str(buffer.getbuffer().nbytes)
 
-        # ============================================================
-        # STEP 18: RETURN RESPONSE
-        # ============================================================
-
-        # Return response object
-        # Flask akan:
-        # 1. Set status code ke 200 OK (default)
-        # 2. Add all headers yang sudah kita set
-        # 3. Stream PDF binary ke client
-        # 4. Close connection setelah selesai
         return response
 
-    # ============================================================
-    # EXCEPTION HANDLING
-    # ============================================================
-
     except Exception as e:
-        # Catch-all untuk unexpected errors
-        # Possible errors:
-        # - ReportLab errors (font issues, drawing errors)
-        # - Memory errors (buffer overflow)
-        # - Any runtime exceptions
-
-        # Print error ke console untuk debugging
-        # Di production, ini akan masuk ke log file
         print("ERROR:", e)
 
-        # Return response based on request type
-        # Smart error handling untuk different contexts
-
         if request.is_json:
-            # AJAX/fetch request expect JSON response
-            # Return JSON dengan error message dan status 500
-            # str(e) convert exception ke string message
             return jsonify({"error": str(e)}), 500
         else:
-            # Traditional form submission expect HTML
-            # Return simple HTML error page
-            # User sees error message di browser
             return f"<html><body><h1>Error: {str(e)}</h1></body></html>", 500
 
 

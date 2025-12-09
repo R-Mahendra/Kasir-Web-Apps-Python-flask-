@@ -94,7 +94,7 @@ Universitas Bina Sarana Informatika (Cikarang).
 - Complete transaction details
 - Business information
 
-![Receipt Demo](https://i.ibb.co.com/FL39Gx8D/struk.png/200x200/667eea/ffffff?text=PDF+Receipt)
+![Receipt Demo](https://i.ibb.co.com/yrV8F6X/struk.png/200x200/667eea/ffffff?text=PDF+Receipt)
 
 </details>
 
