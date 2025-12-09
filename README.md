@@ -378,29 +378,6 @@ Project ini dikembangkan untuk tujuan edukasi dalam mata kuliah **Pemrograman We
 
 ---
 
-## ⚡ Quick Start Guide
-
-**TL;DR - Get Started in 5 Minutes:**
-
-```bash
-# 1. Clone
-git clone https://github.com/R-Mahendra/Kasir-Web-Apps-Python-flask.git
-cd Kasir-Web-Apps-Python-flask
-
-# 2. Install
-pip install -r requirements.txt
-
-# 3. Run
-python main.py
-
-# 4. Login
-# URL: http://localhost:5000
-# Email: zhaenx_id@yeswehack.com
-# Password: zh43nx
-```
-
----
-
 ## 📝 Changelog
 
 ### Version 5.1.0 (2025-12-08)
