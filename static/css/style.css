@@ -461,6 +461,9 @@ footer {
 footer p {
   font-size: 13px;
 }
+footer .sosmed a{
+  color: var(--text-white);
+}
 
 #alertcontainer {
   position: fixed;
